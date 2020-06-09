@@ -1,5 +1,4 @@
 import gym
-import cv2
 import random
 import math
 import torch
@@ -9,10 +8,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 import matplotlib.pyplot as plt
 #from torchviz import make_dot
-from torchsummary import summary
-from collections import namedtuple
-import skimage.transform as transforms
-from skimage import color
 
 env = gym.make('CartPole-v0')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
