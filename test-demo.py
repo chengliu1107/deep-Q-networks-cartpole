@@ -7,13 +7,10 @@ import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-#from torchviz import make_dot
 
 env = gym.make('CartPole-v0')
 #env = wrappers.Monitor(env, 'logger', force=True)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-eps_threshold = 0
 
 #get the number of actons from gym action space
 n_actions = env.action_space.n
@@ -44,12 +41,9 @@ def select_action(state):
     global steps_done
     sample = random.random()
     steps_done += 1
-    if sample > eps_threshold:
-        with torch.no_grad():
-            #pick action with the largest expected reward
-            return policy_net(state).argmax(dim=1, keepdim=True)
-    else:
-        return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
+    with torch.no_grad():
+        #pick action with the largest expected reward
+        return policy_net(state).argmax(dim=1, keepdim=True)
 
 #initialize the networks, optimizers and the memory
 policy_net = FcDQN(4, n_actions).to(device)
@@ -75,7 +69,7 @@ for epoch in range(num_episodes):
 
     print('epoch:', epoch, 'accumulated reward:', episode_rewards[epoch], 'frames:', steps_done)
 
-averaged_rewards = np.ones(num_episodes)
+averaged_rewards = np.zeros(num_episodes)
 averaged_rewards[:] = episode_rewards[:].sum() / num_episodes
 print('Averaged reward among 10 tests:', episode_rewards[:].sum())
 
