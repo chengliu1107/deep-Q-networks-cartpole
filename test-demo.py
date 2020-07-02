@@ -16,7 +16,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 n_actions = env.action_space.n
 #steps counter for epsilon annealing
 steps_done = 0
-num_episodes = 10
+num_episodes = 5
 episode_rewards = np.zeros(num_episodes)
 
 class FcDQN(nn.Module):
