@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import matplotlib.pyplot as plt
+from collections import namedtuple
 #from torchviz import make_dot
 
 env = gym.make('CartPole-v0')
@@ -23,7 +24,7 @@ TARGET_UPDATE = 20
 n_actions = env.action_space.n
 #steps counter for epsilon annealing
 steps_done = 0
-num_episodes = 500
+num_episodes = 10
 episode_rewards = np.zeros(num_episodes)
 episode_count = 0
 
@@ -94,6 +95,7 @@ def update_policy():
     non_termi_mask = torch.tensor(tuple(map(lambda s: s is not None,
                                             batch.next_state)), device=device, 
                                             dtype=torch.bool)
+                                            
     next_state_batch = torch.cat([s for s in batch.next_state
                                             if s is not None])
     state_batch = torch.cat(batch.state)
@@ -115,11 +117,15 @@ def update_policy():
         param.grad.data.clamp_(-2, 2)
     optimizer.step()
 
+    #visualize the calculation graph
+    #visual_graph = make_dot(loss, params=dict(policy_net.named_parameters()))
+    #visual_graph.view()
+
 #initialize the networks, optimizers and the memory
 policy_net = FcDQN(4, n_actions).to(device)
 target_net = FcDQN(4, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
-target_net.eval()
+#target_net.eval()
 
 optimizer = optim.RMSprop(policy_net.parameters(), lr=1e-2)
 
